@@ -1,11 +1,14 @@
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { UserService } from '../user/user.service';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '@/common/guards/auth.guard';
 import { CreateUserInput } from '../user/dto/new-user.input';
 import {
   ACCOUNT_EXIST,
   ACCOUNT_NOT_EXIST,
+  UPDATE_ERROR,
   LOGIN_ERROR,
   NOT_EMPTY,
   REGISTER_ERROR,
@@ -78,6 +81,42 @@ export class AuthResolver {
     return {
       code: REGISTER_ERROR,
       message: 'registration failed',
+    };
+  }
+
+  @Mutation(() => Result, { description: 'Change password' })
+  @UseGuards(GqlAuthGuard)
+  async changePassword(
+    @Context() cxt: any,
+    @Args('oldPassword') oldPassword: string,
+    @Args('newPassword') newPassword: string,
+  ): Promise<Result> {
+    const id = cxt.req.user.id;
+    const user = await this.userService.find(id);
+    if (!user) {
+      return {
+        code: ACCOUNT_NOT_EXIST,
+        message: "account doesn't exist",
+      };
+    }
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (isPasswordValid) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const res = await this.userService.update(id, {password: hashedPassword});
+      if (res) {
+        return {
+          code: SUCCESS,
+          message: 'password updated',
+        }
+      }
+      return {
+        code: UPDATE_ERROR,
+        message: 'password update failed',
+      };
+    }
+    return {
+      code: LOGIN_ERROR,
+      message: 'the current password is incorrect',
     };
   }
 }
