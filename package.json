@@ -7,8 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write --config ./prettier/.prettierrc \"src/**/*.ts\" \"test/**/*.ts\"",
-    "format:check": "prettier --check --config ./prettier/.prettierrc \"src/**/*.ts\" \"test/**/*.ts\" ",
+    "format": "prettier --config ./prettier/.prettierrc --write",
+    "format:check": "prettier --config ./prettier/.prettierrc --check",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -88,6 +88,7 @@
     "testEnvironment": "node"
   },
   "lint-staged": {
-    " ": "./prettier/prettier-format.sh"
+    "src/**/*.{ts,tsx}": ["./prettier/prettier-format.sh"],
+    "test/**/*.{ts,tsx}": ["./prettier/prettier-format.sh"]
   }
 }
