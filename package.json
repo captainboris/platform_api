@@ -88,6 +88,7 @@
     "testEnvironment": "node"
   },
   "lint-staged": {
-    " ": "./prettier/prettier-format.sh"
+    "src/**/*.{ts,tsx}": "./prettier/prettier-format.sh",
+    "test/**/*.{ts,tsx}": "./prettier/prettier-format.sh"
   }
 }
