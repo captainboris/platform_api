@@ -4,5 +4,29 @@ on:
 jobs:
     rerun-CI-wprlflow:
         uses: ./.github/workflows/CI.yml
-        
-    
+    deploy:
+        environment: uat
+        name: build and deploy
+        runs-on: ubuntu-latest
+        steps: 
+            - name: Check out code
+              uses: actions/checkout@v4
+            - name: output git commit hash
+              id: commit
+              uses: prompt/actions-commit-hash@v3
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_BORIS }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_BORIS }}
+                aws-region: ap-southeast-2
+            - name: Login to Amazon ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v2
+            - name: Build, tag, and push image to Amazon ECR
+              env:
+                ECR_REGISTRY_BORIS: ${{ steps.login-ecr.outputs.registry }}
+                ECR_REPOSITORY_UAT_BORIS: beequantapi
+              run: |
+                docker build -t $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ steps.commit.outputs.short }} .
+                docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ steps.commit.outputs.short }}
