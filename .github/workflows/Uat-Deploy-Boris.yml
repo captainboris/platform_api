@@ -7,7 +7,6 @@ on:
         branches:
             - feat/CD-pipeline-uat-BorisM
     workflow_dispatch:
-    
 jobs:
     rerun-CI-worlflow:
         uses: ./.github/workflows/CI.yml
