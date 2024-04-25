@@ -9,7 +9,7 @@ jobs:
     rerun-CI-worlflow:
         uses: ./.github/workflows/CI.yml
     push-image-to-ecr:
-        environment: uat
+        #environment: uat
         name: build and push image
         runs-on: ubuntu-latest
         needs: rerun-CI-worlflow
