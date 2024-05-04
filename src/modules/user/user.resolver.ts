@@ -4,30 +4,50 @@ import { UserType } from './dto/user.type';
 import { UserService } from './user.service';
 import { UpdateUserInput } from './dto/update-user.input';
 import { SkipAuth } from '../auth/skip-auth.decorator';
+import { convertToLocalTime } from '@/common/utils/time-utils';
 
-@Resolver()
+@Resolver(of => UserType) // Ensure to specify what type this resolver is for
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query(() => [UserType], { description: 'Get all users' })
   async getUsers(): Promise<UserType[]> {
-    return await this.userService.findAll();
+    const users = await this.userService.findAll();
+    // Convert each user's relevant datetime fields
+    users.forEach(user => {
+      if (user.lastLoginTime && user.timezone) {
+        user.lastLoginTime = convertToLocalTime(user.lastLoginTime, user.timezone);
+      }
+    });
+    return users;
   }
 
   @Query(() => UserType, { description: 'Find user by email' })
   async getUserByEmail(@Args('email') email: string): Promise<UserType> {
-    return await this.userService.findByEmail(email);
+    const user = await this.userService.findByEmail(email);
+    if (user && user.lastLoginTime && user.timezone) {
+      user.lastLoginTime = convertToLocalTime(user.lastLoginTime, user.timezone);
+    }
+    return user;
   }
 
   @Query(() => UserType, { description: 'Find user by id' })
   async getUserById(@Args('id') id: string): Promise<UserType> {
-    return await this.userService.find(id);
+    const user = await this.userService.find(id);
+    if (user && user.lastLoginTime && user.timezone) {
+      user.lastLoginTime = convertToLocalTime(user.lastLoginTime, user.timezone);
+    }
+    return user;
   }
 
   @Query(() => UserType, { description: 'Find user by context' })
-  async getUserInfo(@Context() cxt: any): Promise<UserType> {
-    const id = cxt.req.user.id;
-    return await this.userService.find(id);
+  async getUserInfo(@Context() ctx: any): Promise<UserType> {
+    const id = ctx.req.user.id;
+    const user = await this.userService.find(id);
+    if (user && user.lastLoginTime && user.timezone) {
+      user.lastLoginTime = convertToLocalTime(user.lastLoginTime, user.timezone);
+    }
+    return user;
   }
 
   @SkipAuth()

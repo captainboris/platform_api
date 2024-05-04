@@ -11,6 +11,8 @@ import getConfig from './config';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './global-exception.filter';
+import { TimezoneModule } from './timezone/timezone.module';
+
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { AllExceptionsFilter } from './global-exception.filter';
     UserModule,
     AuthModule,
     ExchangeKeyModule,
+    TimezoneModule,
   ],
   controllers: [AppController],
   providers: [

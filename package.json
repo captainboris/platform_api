@@ -36,6 +36,7 @@
     "dotenv": "^16.3.1",
     "graphql": "^16.8.1",
     "joi": "^17.12.2",
+    "moment-timezone": "^0.5.45",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.11.3",
@@ -86,9 +87,6 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/$1"
+    "testEnvironment": "node"
   }
-}
 }
