@@ -26,7 +26,7 @@ export class UserResolver {
 
   @Query(() => UserType, { description: 'Find user by context' })
   async getUserInfo(@Context() cxt: any): Promise<UserType> {
-    const id = cxt.req.user.id;
+    const id = cxt.req.user?.id;
     return await this.userService.find(id);
   }
 

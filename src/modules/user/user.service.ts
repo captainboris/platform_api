@@ -53,6 +53,9 @@ export class UserService {
         id,
       },
     });
+    if(!res.realName){
+      res.realName = ""
+    }
     return res;
   }
 
