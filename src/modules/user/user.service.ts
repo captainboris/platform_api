@@ -66,6 +66,9 @@ export class UserService {
         email,
       },
     });
+    if(!res.realName){
+      res.realName = ""
+    }
     return res;
   }
 }
