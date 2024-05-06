@@ -12,4 +12,6 @@ export class UpdateUserInput {
   password?: string;
   @Field({ description: 'Mobile number', nullable: true })
   mobile?: string;
+  @Field({ description: 'email', nullable: true })
+  email?: string;
 }
