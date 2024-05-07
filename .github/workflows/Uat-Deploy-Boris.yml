@@ -1,0 +1,62 @@
+name: Uat Deploy Boris
+permissions:
+  contents: read
+  id-token: write
+on:
+    push:
+        branches:
+            - feat/CD-pipeline-uat-BorisM
+    workflow_dispatch:
+      inputs:
+        version:
+          description: 'Confirm version to deploy'
+          required: true
+          default: 'V0.0.0.0'
+jobs:
+    rerun-CI-worlflow:
+        uses: ./.github/workflows/CI.yml
+    push-image-to-ecr:
+        #environment: uat
+        name: build and push image
+        runs-on: ubuntu-latest
+        needs: rerun-CI-worlflow
+        steps: 
+            - name: checkout code
+              uses: actions/checkout@v4
+            - name: configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                audience: sts.amazonaws.com
+                aws-region: ap-southeast-2
+                role-to-assume: ${{ secrets.AWS_ROLE_ARN_BORIS }}
+            - name: sts get caller identity
+              run: aws sts get-caller-identity
+            - name: Login to Amazon ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v2
+            - name: Build, tag, and push image to Amazon ECR
+              env:
+                ECR_REGISTRY_BORIS: ${{ steps.login-ecr.outputs.registry }}
+                ECR_REPOSITORY_UAT_BORIS: beequantapi
+              run: |
+                docker build -t $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }} .
+                docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }}
+    # deploy-by-terraform:
+    #     environment: uat
+    #     name: deploy by terraform
+    #     runs-on: ubuntu-latest
+    #     needs: push-image-to-ecr
+    #     steps:
+    #         - name: checkout code
+    #           uses: actions/checkout@v4
+    #           with:
+    #             repository: beequant/xxx  #this will be boris' version terraform repo
+    #             ref: main
+    #         - name: setup terraform
+    #           uses: hashicorp/setup-terraform@v3
+    #         - name: terraform init
+    #           run: terraform init
+    #         - name: terraform plan
+    #           run: terraform plan
+    #         - name: terraform apply
+    #           run: terraform apply -auto-approve -var="image_uri=$ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.sha }}"
