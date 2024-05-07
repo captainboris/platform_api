@@ -39,8 +39,8 @@ jobs:
                 ECR_REGISTRY_BORIS: ${{ steps.login-ecr.outputs.registry }}
                 ECR_REPOSITORY_UAT_BORIS: beequantapi
               run: |
-                docker build -t $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.event.inputs.version }} .
-                docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.event.inputs.version }}
+                docker build -t $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }} .
+                docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }}
     # deploy-by-terraform:
     #     environment: uat
     #     name: deploy by terraform
