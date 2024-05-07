@@ -7,6 +7,11 @@ on:
         branches:
             - feat/CD-pipeline-uat-BorisM
     workflow_dispatch:
+      inputs:
+        version:
+          description: 'Version to deploy'
+          required: true
+          default: 'V0.0.0.0'
 jobs:
     rerun-CI-worlflow:
         uses: ./.github/workflows/CI.yml
@@ -34,8 +39,8 @@ jobs:
                 ECR_REGISTRY_BORIS: ${{ steps.login-ecr.outputs.registry }}
                 ECR_REPOSITORY_UAT_BORIS: beequantapi
               run: |
-                docker build -t $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.sha }} .
-                docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.sha }}
+                docker build -t $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.event.inputs.version }} .
+                docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.event.inputs.version }}
     # deploy-by-terraform:
     #     environment: uat
     #     name: deploy by terraform

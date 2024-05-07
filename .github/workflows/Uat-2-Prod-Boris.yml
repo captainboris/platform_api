@@ -7,6 +7,11 @@ on:
     branches:
       - feat/CD-pipeline-uat-BorisM
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Confirm version to deploy'
+        required: true
+        default: 'V0.0.0.0'
 jobs:
   sync-image-to-prod-ecr:
     #environment: prod
@@ -29,9 +34,9 @@ jobs:
           ECR_REPOSITORY_UAT_BORIS: beequantapi
           ECR_REPOSITORY_PROD_BORIS: beequantapi-prod
         run: |
-          docker pull $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.sha }}
-          docker tag $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.sha }} $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ github.sha }}-uat-tested
-          docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ github.sha }}-uat-tested
+          docker pull $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.event.inputs.version }}
+          docker tag $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.event.inputs.version }} $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ github.event.inputs.version }}-uat-tested
+          docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ github.event.inputs.version }}-uat-tested
   # deploy-by-terraform:
   #   environment: prod
   #   runs-on: ubuntu-latest
