@@ -9,7 +9,7 @@ on:
     workflow_dispatch:
       inputs:
         version:
-          description: 'Version to deploy'
+          description: 'Confirm version to deploy'
           required: true
           default: 'V0.0.0.0'
 jobs:
@@ -28,7 +28,7 @@ jobs:
               with:
                 audience: sts.amazonaws.com
                 aws-region: ap-southeast-2
-                role-to-assume: arn:aws:iam::417805623903:role/GitHubAction-AssumeRoleWithAction
+                role-to-assume: ${{ secrets.AWS_ROLE_ARN_BORIS }}
             - name: sts get caller identity
               run: aws sts get-caller-identity
             - name: Login to Amazon ECR
