@@ -3,20 +3,17 @@ permissions:
   contents: read
   id-token: write
 on:
-    push:
-        branches:
-            - feat/CD-pipeline-uat-BorisM
-    workflow_dispatch:
-      inputs:
-        version:
-          description: 'Confirm version to deploy'
-          required: true
-          default: 'V0.0.0.0'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Confirm version to deploy to uat'
+        required: true
+        default: ''
 jobs:
     rerun-CI-worlflow:
         uses: ./.github/workflows/CI.yml
     push-image-to-ecr:
-        #environment: uat
+        environment: uat
         name: build and push image
         runs-on: ubuntu-latest
         needs: rerun-CI-worlflow
@@ -41,22 +38,3 @@ jobs:
               run: |
                 docker build -t $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }} .
                 docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }}
-    # deploy-by-terraform:
-    #     environment: uat
-    #     name: deploy by terraform
-    #     runs-on: ubuntu-latest
-    #     needs: push-image-to-ecr
-    #     steps:
-    #         - name: checkout code
-    #           uses: actions/checkout@v4
-    #           with:
-    #             repository: beequant/xxx  #this will be boris' version terraform repo
-    #             ref: main
-    #         - name: setup terraform
-    #           uses: hashicorp/setup-terraform@v3
-    #         - name: terraform init
-    #           run: terraform init
-    #         - name: terraform plan
-    #           run: terraform plan
-    #         - name: terraform apply
-    #           run: terraform apply -auto-approve -var="image_uri=$ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ github.sha }}"
