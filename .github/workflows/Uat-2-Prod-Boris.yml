@@ -1,4 +1,4 @@
-name: Uat-2-Prod-Boris
+name: Uat to Prod Boris
 permissions:
   contents: read
   id-token: write
@@ -20,17 +20,13 @@ jobs:
           audience: sts.amazonaws.com
           aws-region: ap-southeast-2
           role-to-assume: ${{ secrets.AWS_ROLE_ARN_BORIS }}
-      - name: sts get caller identity
-        run: aws sts get-caller-identity
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
       - name: pull latest image from UAT ECR
         env:
           ECR_REGISTRY_BORIS: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_UAT_BORIS: beequantapi
-          ECR_REPOSITORY_PROD_BORIS: beequantapi-prod
         run: |
-          docker pull $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }}
-          docker tag $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }} $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ inputs.version }}-uat-tested
-          docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ inputs.version }}-uat-tested
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_UAT_BORIS }}:${{ inputs.version }}
+          docker tag ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_UAT_BORIS }}:${{ inputs.version }} ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_PROD_BORIS }}:${{ inputs.version }}-uat-tested
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_PROD_BORIS }}:${{ inputs.version }}-uat-tested
