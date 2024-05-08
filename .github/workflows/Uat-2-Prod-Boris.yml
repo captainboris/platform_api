@@ -30,3 +30,4 @@ jobs:
           docker pull ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_UAT_BORIS }}:${{ inputs.version }}
           docker tag ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_UAT_BORIS }}:${{ inputs.version }} ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_PROD_BORIS }}:${{ inputs.version }}-uat-tested
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_PROD_BORIS }}:${{ inputs.version }}-uat-tested
+
