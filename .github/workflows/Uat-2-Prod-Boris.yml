@@ -3,18 +3,15 @@ permissions:
   contents: read
   id-token: write
 on:
-  push:
-    branches:
-      - feat/CD-pipeline-uat-BorisM
   workflow_dispatch:
     inputs:
       version:
-        description: 'Confirm version to deploy'
+        description: 'Confirm version to deploy to prod'
         required: true
-        default: 'V0.0.0.0'
+        default: ''
 jobs:
   sync-image-to-prod-ecr:
-    #environment: prod
+    environment: prod
     runs-on: ubuntu-latest
     steps:
       - name: configure AWS credentials

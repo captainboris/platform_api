@@ -3,20 +3,17 @@ permissions:
   contents: read
   id-token: write
 on:
-    push:
-        branches:
-            - feat/CD-pipeline-uat-BorisM
-    workflow_dispatch:
-      inputs:
-        version:
-          description: 'Confirm version to deploy'
-          required: true
-          default: 'V0.0.0.0'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Confirm version to deploy to uat'
+        required: true
+        default: ''
 jobs:
     rerun-CI-worlflow:
         uses: ./.github/workflows/CI.yml
     push-image-to-ecr:
-        #environment: uat
+        environment: uat
         name: build and push image
         runs-on: ubuntu-latest
         needs: rerun-CI-worlflow
