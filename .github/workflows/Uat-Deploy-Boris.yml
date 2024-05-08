@@ -30,9 +30,6 @@ jobs:
               id: login-ecr
               uses: aws-actions/amazon-ecr-login@v2
             - name: Build, tag, and push image to Amazon ECR
-              env:
-                ECR_REGISTRY_BORIS: ${{ steps.login-ecr.outputs.registry }}
-                ECR_REPOSITORY_UAT_BORIS: beequantapi
               run: |
-                docker build -t $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }} .
-                docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }}
+                docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_UAT_BORIS }}:${{ inputs.version }} .
+                docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_UAT_BORIS }}:${{ inputs.version }}

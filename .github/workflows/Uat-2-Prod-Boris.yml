@@ -26,9 +26,7 @@ jobs:
       - name: pull latest image from UAT ECR
         env:
           ECR_REGISTRY_BORIS: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_UAT_BORIS: beequantapi
-          ECR_REPOSITORY_PROD_BORIS: beequantapi-prod
         run: |
-          docker pull $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }}
-          docker tag $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }} $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ inputs.version }}-uat-tested
-          docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ inputs.version }}-uat-tested
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_UAT_BORIS }}:${{ inputs.version }}
+          docker tag ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_UAT_BORIS }}:${{ inputs.version }} ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_PROD_BORIS }}:${{ inputs.version }}-uat-tested
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY_PROD_BORIS }}:${{ inputs.version }}-uat-tested
