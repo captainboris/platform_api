@@ -37,21 +37,3 @@ jobs:
           docker pull $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }}
           docker tag $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_UAT_BORIS:${{ inputs.version }} $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ inputs.version }}-uat-tested
           docker push $ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ inputs.version }}-uat-tested
-  # deploy-by-terraform:
-  #   environment: prod
-  #   runs-on: ubuntu-latest
-  #   needs: sync-image-to-prod-ecr
-  #   steps:
-  #     - name: checkout code
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: beequant/xxx  #this will be boris' version Prod terraform repo
-  #         ref: main
-  #     - name: setup terraform
-  #       uses: hashicorp/setup-terraform@v3
-  #     - name: terraform init
-  #       run: terraform init
-  #     - name: terraform plan
-  #       run: terraform plan
-  #     - name: terraform apply
-  #       run: terraform apply -auto-approve -var="image_uri=$ECR_REGISTRY_BORIS/$ECR_REPOSITORY_PROD_BORIS:${{ github.sha }}-uat-tested"
